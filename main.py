@@ -6,7 +6,9 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from telemetry import Tab1
+from graph import Tab2
 from map import Tab3
+from extra import Tab4
 
 class MainWindow(QMainWindow):
     def __init__(self):
