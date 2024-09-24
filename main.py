@@ -3,8 +3,6 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QTabWidget,
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QPixmap
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-from PyQt5.QtWebEngineWidgets import QWebEngineView
 from telemetry import Tab1
 from graph import Tab2
 from map import Tab3
@@ -20,7 +18,7 @@ class MainWindow(QMainWindow):
             QMainWindow {
                 background: qlineargradient(
                     x1: 0, y1: 0, x2: 1, y2: 0,
-                    stop: 0 #000, stop: 1 #00FFFF
+                    stop: 0 #000, stop: 1 #8e82cd
                 );
             }
         """)
@@ -47,7 +45,7 @@ class MainWindow(QMainWindow):
         header_2.setGeometry(650, 20, 600, 30)
         header_2.setAlignment(Qt.AlignCenter)
 
-        logo_image = QPixmap("Add Ons\\Team Kalpana Logo 1.png").scaledToWidth(100, Qt.TransformationMode.SmoothTransformation)
+        logo_image = QPixmap("Cansat_Telemetry_Software\Add Ons\Team Kalpana Logo 1.png").scaledToWidth(100, Qt.TransformationMode.SmoothTransformation)
         logo_label = QLabel(widget1)
         logo_label.setPixmap(logo_image)
         logo_label.setGeometry(900, 60, 100, 100)
@@ -82,11 +80,13 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget(self)
         self.tabs.setGeometry(10, 175, 1900, 725)
         self.tabs.addTab(Tab1(), "Telemetry Data")
-        self.tabs.addTab(Tab3(), "Location and Cordinates")
+        self.tabs.addTab(Tab2(), "Graphs")
+        self.tabs.addTab(Tab3(), "Location and Live Telecast")
+        self.tabs.addTab(Tab4(), "Extras")
         self.tabs.setStyleSheet("""
             QTabWidget::pane {
                 border-top: 2px solid #c3c7c3;
-                background: #c3c7c3;
+                background: None;
                 border-radius: 40%
             }
             QTabBar::tab {
@@ -96,14 +96,14 @@ class MainWindow(QMainWindow):
                 font-weight: Bold;
                 border: 1px solid #c3c7c3;
                 border-radius:25%;
-                width: 925%;
+                width: 445%;
                 padding: 10px;
                 margin: 2px;
             }
             QTabBar::tab:selected {
                 background: #a2a3a2;
                 border-color: #a2a3a2;
-                width: 925%;
+                width: 445%;
             }
             QTabBar::tab:hover {
                 background: #6f6f6f;
