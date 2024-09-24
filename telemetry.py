@@ -7,10 +7,10 @@ class Tab1(QWidget):
         layout = QHBoxLayout()
         self.setLayout(layout)
 
-        telemetry_data1 = QWidget()
+        telemetry_data1 = QWidget() #my name is Ankur pal
         telemetry_data2 = QWidget()
-        telemetry_data1.setStyleSheet("border: 4px solid #084705; border-radius:25%;")
-        telemetry_data2.setStyleSheet("border: 4px solid #084705; border-radius:25%;")
+        telemetry_data1.setStyleSheet(" border-radius:25%;")
+        telemetry_data2.setStyleSheet(" border-radius:25%;")
 
         layout1 = QVBoxLayout(telemetry_data1)
         layout2 = QVBoxLayout(telemetry_data2)
@@ -19,7 +19,6 @@ class Tab1(QWidget):
         environment_data.setFixedHeight(450)
         voltage_current = QWidget()
         gnss = QWidget()
-        gnss.setStyleSheet("border: 4px solid #084705; border-radius:25%;")
 
         Accel = QWidget()
         Gyro = QWidget()
@@ -49,8 +48,8 @@ class Tab1(QWidget):
         environment_columns = ["ALTITUDE", "PRESSURE", "TEMP", "TVOC", "eCO2"]
         voltage_current_columns = ["Voltage"]
         gnss_columns = ["GNSS_TIME","GNSS_LATITUDE","GNSS_LONGITUDE","GNSS_ALTITUDE","GNSS_SATS"]
-        Accel_columns = ["ACC_R   (Roll)","ACC_P   (Pitch)","ACC_Y   (Yaw)"]
-        Gyro_columns = ["GYRO_R   (Roll)","GYRO_P   (Pitch)","GYRO_Y   (Yaw)"]
+        Accel_columns = ["ACC_R    (Roll)","ACC_P    (Pitch)","ACC_Y    (Yaw)"]
+        Gyro_columns =  ["GYRO_R   (Roll)","GYRO_P   (Pitch)","GYRO_Y   (Yaw)"]
 
         component_list = [environment_data,voltage_current,gnss,Accel,Gyro]
         component_layout_list = [environment_data_layout,voltage_current_layout,gnss_layout,Accel_layout,Gyro_layout]
@@ -61,7 +60,7 @@ class Tab1(QWidget):
         label1.setGeometry(160, 10, 270, 30)
         label1.setAlignment(Qt.AlignCenter)
 
-        label2 = QLabel("ELECTRONICAL STATS", voltage_current)
+        label2 = QLabel("ELECTRICAL STATS", voltage_current)
         label2.setStyleSheet("font-size: 20px; color: #cbe6ca;font-weight:Bold; border:None;")
         label2.setGeometry(160, 10, 270, 30)
         label2.setAlignment(Qt.AlignCenter)
@@ -105,4 +104,7 @@ class Tab1(QWidget):
                 input_field.setFixedSize(200, 40)
                 input_field.setAlignment(Qt.AlignCenter)
                 l.addWidget(input_field, j, 1)
+                m.setStyleSheet("border: 4px solid #084705; border-radius:25%;")
+
+
 
