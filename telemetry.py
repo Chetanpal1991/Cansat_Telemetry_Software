@@ -16,20 +16,20 @@ class Tab1(QWidget):
         layout2 = QVBoxLayout(telemetry_data2)
 
         environment_data = QWidget()
-        environment_data.setFixedHeight(450)
         voltage_current = QWidget()
         gnss = QWidget()
+        gnss.setFixedHeight(450)
 
         Accel = QWidget()
         Gyro = QWidget()
 
-        layout1.addWidget(environment_data)
+        layout1.addWidget(gnss)
         layout1.addWidget(voltage_current)
         layout2.addWidget(Accel)
         layout2.addWidget(Gyro)
 
         layout.addWidget(telemetry_data1)
-        layout.addWidget(gnss)
+        layout.addWidget(environment_data)
         layout.addWidget(telemetry_data2)
 
 

@@ -81,34 +81,36 @@ class MainWindow(QMainWindow):
         self.tabs.setGeometry(10, 175, 1900, 725)
         self.tabs.addTab(Tab1(), "Telemetry Data")
         self.tabs.addTab(Tab2(), "Graphs")
-        self.tabs.addTab(Tab3(), "Location and Live Telecast")
-        self.tabs.addTab(Tab4(), "Extras")
+        self.tabs.addTab(Tab3(), "Location and 3D Plotting")
+        self.tabs.addTab(Tab4(), "Live Telecast")
         self.tabs.setStyleSheet("""
-            QTabWidget::pane {
-                border-top: 2px solid #c3c7c3;
-                background: None;
-                border-radius: 40%
-            }
-            QTabBar::tab {
-                background: #c3c7c3;
-                color: white;
-                font-size: 15px;
-                font-weight: Bold;
-                border: 1px solid #c3c7c3;
-                border-radius:25%;
-                width: 445%;
-                padding: 10px;
-                margin: 2px;
-            }
-            QTabBar::tab:selected {
-                background: #a2a3a2;
-                border-color: #a2a3a2;
-                width: 445%;
-            }
-            QTabBar::tab:hover {
-                background: #6f6f6f;
-            }
-        """)
+    QTabWidget::pane {
+        border-top: 2px solid None;
+        background: None;
+    }
+    QTabBar::tab {
+        background:#b4d7e0;
+        color: white;
+        font-size: 25px;
+        font-weight: Bold;
+        border: 1px solid #b4d7e0;
+        border-radius: 20px;  /* More rounded for pill shape */
+        padding: 10px 20px;  /* Add more horizontal padding */
+        margin: 2px;
+        width: 429%;  
+        height: 30px;  
+    }
+    QTabBar::tab:selected {
+        background: #848f91;
+        border-color: #848f91;
+        border-radius: 20px;  /* Keep the selected tab pill-shaped */
+    }
+    QTabBar::tab:hover {
+        background: #89a4ab;
+        border-radius: 20px;  /* Ensure hover state also maintains the pill shape */
+    }
+""")
+
 
         widget3.setGeometry(10, 900, 1900, 100)
 
@@ -119,8 +121,8 @@ class MainWindow(QMainWindow):
                 border: 3px solid black; 
                 border-radius: 15px;
                 background: qlineargradient(
-                    x1: 0, y1: 0, x2: 1, y2: 0,
-                    stop: 0 #230636, stop: 1 #7516b5
+                    x1: 0, y1: 0, x2: 1, y2: 1,
+                    stop: 0 #230636, stop: 1 #00FFFF
                 );
                 font-size: 20px; 
                 color: orange;
@@ -128,8 +130,8 @@ class MainWindow(QMainWindow):
 
             QPushButton:hover {
                 background: qlineargradient(
-                    x1: 0, y1: 0, x2: 1, y2: 0,
-                    stop: 0 #7516b5 , stop: 1 #230636
+                    x1: 0, y1: 0, x2: 1, y2: 1,
+                    stop: 0 #00FFFF , stop: 1 #230636
                 );
             }
 
