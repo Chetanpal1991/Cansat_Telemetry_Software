@@ -31,31 +31,31 @@ class MainWindow(QMainWindow):
         widget1.setStyleSheet("background-color:#15144a;")
 
         header_1 = QLabel("SOFTWARE STATE", widget1)
-        header_1.setStyleSheet("font-size: 20px; color: #cbe6ca; background-color: None; font-weight:Bold;")
-        header_1.setGeometry(25, 20, 600, 30)
+        header_1.setStyleSheet("font-size: 25px; color: #cbe6ca; background-color: None; font-weight:Bold;")
+        header_1.setGeometry(25, 20, 580, 30)
         header_1.setAlignment(Qt.AlignCenter)
 
         header_1_input = QLabel("LAUNCH_PAD", widget1)
         header_1_input.setStyleSheet("font-size: 20px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
-        header_1_input.setGeometry(225, 80, 200, 50)
+        header_1_input.setGeometry(215, 80, 200, 50)
         header_1_input.setAlignment(Qt.AlignCenter)
 
-        header_2 = QLabel("TEAM KALPANA : 2022ASI-049", widget1)
+        header_2 = QLabel("TEAM KALPANA : 2024-CANSAT-ASI-023", widget1)
         header_2.setStyleSheet("font-size: 30px; color: #cbe6ca; background-color: None;font-weight:Bold;")
-        header_2.setGeometry(650, 20, 600, 30)
+        header_2.setGeometry(640, 15, 630, 30)
         header_2.setAlignment(Qt.AlignCenter)
 
         logo_image = QPixmap("Cansat_Telemetry_Software\Add Ons\Team Kalpana Logo 1.png").scaledToWidth(100, Qt.TransformationMode.SmoothTransformation)
         logo_label = QLabel(widget1)
         logo_label.setPixmap(logo_image)
-        logo_label.setGeometry(900, 60, 100, 100)
+        logo_label.setGeometry(900, 60, 150, 100)
 
         header_3 = QWidget(widget1)
-        header_3.setGeometry(1275, 20, 600, 30)
+        header_3.setGeometry(1275, 20, 580, 30)
         header_3.setStyleSheet("background-color: None;")
 
         header_3_wid_1 = QLabel("TIME", header_3)
-        header_3_wid_1.setStyleSheet("font-size: 20px; color: #cbe6ca;font-weight:Bold;")
+        header_3_wid_1.setStyleSheet("font-size: 25px; color: #cbe6ca;font-weight:Bold;")
         header_3_wid_1.setGeometry(40, 0, 240, 30)
         header_3_wid_1.setAlignment(Qt.AlignCenter)
 
@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
         header_3_wid_1_input.setAlignment(Qt.AlignCenter)
 
         header_3_wid_2 = QLabel("PACKET COUNT", header_3)
-        header_3_wid_2.setStyleSheet("font-size: 20px; color: #cbe6ca;font-weight:Bold;")
+        header_3_wid_2.setStyleSheet("font-size: 25px; color: #cbe6ca;font-weight:Bold;")
         header_3_wid_2.setGeometry(320, 0, 240, 30)
         header_3_wid_2.setAlignment(Qt.AlignCenter)
 
