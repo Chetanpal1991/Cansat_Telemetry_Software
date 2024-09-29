@@ -188,11 +188,23 @@ class MainWindow(QMainWindow):
         button5.clicked.connect(cx_function)
         layout3.addWidget(button5)
 
-        button6 = QPushButton("SIMULATION")
+        button6 = QPushButton("SIM Enable")
         button6.setStyleSheet(footer_button_style)
         button6.setFixedSize(150, 50)
         button6.clicked.connect(simulation_function)
         layout3.addWidget(button6)
+
+        button7 = QPushButton("SIM Activate")
+        button7.setStyleSheet(footer_button_style)
+        button7.setFixedSize(150, 50)
+        button7.clicked.connect(simulation_function)
+        layout3.addWidget(button7)
+
+        button8 = QPushButton("SIM Disable")
+        button8.setStyleSheet(footer_button_style)
+        button8.setFixedSize(150, 50)
+        button8.clicked.connect(simulation_function)
+        layout3.addWidget(button8)
 
 
 
