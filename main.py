@@ -1,12 +1,14 @@
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QTabWidget,
-                             QVBoxLayout, QHBoxLayout, QGridLayout, QPushButton, QLabel)
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QTabWidget, QHBoxLayout, QPushButton, QLabel)
+from PyQt5.QtCore import Qt, QUrl, QTimer
 from PyQt5.QtGui import QPixmap
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import pandas as pd
 from telemetry import Tab1
 from graph import Tab2
 from map import Tab3
 from extra import Tab4
+
+file_link = "Cansat_Telemetry_Software\\Add Ons\\trial_data.csv"
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -26,6 +28,9 @@ class MainWindow(QMainWindow):
         widget1 = QWidget(self)
         widget2 = QWidget(self)
         widget3 = QWidget(self)
+        
+        self.df = pd.read_csv(file_link)
+        self.row_index = 0
 
         widget1.setGeometry(10, 10, 1900, 150)
         widget1.setStyleSheet("background-color:#15144a;")
@@ -35,10 +40,10 @@ class MainWindow(QMainWindow):
         header_1.setGeometry(25, 20, 580, 30)
         header_1.setAlignment(Qt.AlignCenter)
 
-        header_1_input = QLabel("LAUNCH_PAD", widget1)
-        header_1_input.setStyleSheet("font-size: 20px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
-        header_1_input.setGeometry(215, 80, 200, 50)
-        header_1_input.setAlignment(Qt.AlignCenter)
+        self. header_1_input = QLabel("LAUNCH_PAD", widget1)
+        self. header_1_input.setStyleSheet("font-size: 35px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
+        self. header_1_input.setGeometry(190, 80, 240, 50)
+        self. header_1_input.setAlignment(Qt.AlignCenter)
 
         header_2 = QLabel("TEAM KALPANA : 2024-CANSAT-ASI-023", widget1)
         header_2.setStyleSheet("font-size: 30px; color: #cbe6ca; background-color: None;font-weight:Bold;")
@@ -59,20 +64,20 @@ class MainWindow(QMainWindow):
         header_3_wid_1.setGeometry(40, 0, 240, 30)
         header_3_wid_1.setAlignment(Qt.AlignCenter)
 
-        header_3_wid_1_input = QLabel("0", widget1)
-        header_3_wid_1_input.setStyleSheet("font-size: 20px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
-        header_3_wid_1_input.setGeometry(1335, 80, 200, 50)
-        header_3_wid_1_input.setAlignment(Qt.AlignCenter)
+        self.header_3_wid_1_input = QLabel("0", widget1)
+        self.header_3_wid_1_input.setStyleSheet("font-size: 35px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
+        self.header_3_wid_1_input.setGeometry(1335, 80, 200, 50)
+        self.header_3_wid_1_input.setAlignment(Qt.AlignCenter)
 
         header_3_wid_2 = QLabel("PACKET COUNT", header_3)
         header_3_wid_2.setStyleSheet("font-size: 25px; color: #cbe6ca;font-weight:Bold;")
         header_3_wid_2.setGeometry(320, 0, 240, 30)
         header_3_wid_2.setAlignment(Qt.AlignCenter)
 
-        header_3_wid_2_input = QLabel("0", widget1)
-        header_3_wid_2_input.setStyleSheet("font-size: 20px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
-        header_3_wid_2_input.setGeometry(1275 + 340, 80, 200, 50)
-        header_3_wid_2_input.setAlignment(Qt.AlignCenter)
+        self.header_3_wid_2_input = QLabel("0", widget1)
+        self.header_3_wid_2_input.setStyleSheet("font-size: 35px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
+        self.header_3_wid_2_input.setGeometry(1275 + 340, 80, 200, 50)
+        self.header_3_wid_2_input.setAlignment(Qt.AlignCenter)
 
         widget2.setGeometry(10, 125, 1900, 875)
         widget2.setStyleSheet("background-color: None;")
@@ -110,7 +115,6 @@ class MainWindow(QMainWindow):
         border-radius: 20px;  /* Ensure hover state also maintains the pill shape */
     }
 """)
-
 
         widget3.setGeometry(10, 900, 1900, 100)
 
@@ -205,8 +209,26 @@ class MainWindow(QMainWindow):
         button8.setFixedSize(150, 50)
         button8.clicked.connect(simulation_function)
         layout3.addWidget(button8)
-
-
+       
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_data)
+        self.timer.start(1000)  # Update every 1 second
+        
+    def update_data(self):
+        #Method to update labels from CSV data.
+        if self.row_index < len(self.df):
+            # Get the current row's data
+            current_row = self.df.iloc[self.row_index]
+            # Update labels with the corresponding data
+            time_stamping = current_row["TIME_STAMPING"]
+            packet_count = current_row["PACKET_COUNT"]
+            flight_software_state = current_row["FLIGHT_SOFTWARE_STATE"]
+            # Set the label text
+            self.header_3_wid_1_input.setText(str(time_stamping))
+            self.header_3_wid_2_input.setText(str(packet_count))
+            self.header_1_input.setText(str(flight_software_state))
+            # Increment row index to move to the next row
+            self.row_index += 1
 
 if __name__ == '__main__':
     app = QApplication([])

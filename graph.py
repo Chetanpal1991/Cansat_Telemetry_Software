@@ -1,66 +1,303 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QHBoxLayout,QVBoxLayout
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import QUrl, Qt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
+import sys
+import pyqtgraph as pg
+from PyQt5.QtWidgets import QMainWindow, QLabel, QGridLayout, QVBoxLayout, QWidget
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QIcon, QPixmap, QPalette, QBrush
+import pandas as pd
 import numpy as np
+from datetime import datetime
+from geopy.distance import distance
 
-class Tab2(QWidget):
+file_link = "Cansat_Telemetry_Software\\Add Ons\\trial_data.csv"
+
+class Tab2(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        self.fig1 = Figure(figsize=(10, 6))
-        self.canvas1 = FigureCanvas(self.fig1)
-        self.fig1.set_facecolor((0.5, 0.3, 0.8, 0.5))
-        self.canvas1.setStyleSheet("border-radius:25%;")
-        self.canvas1.setFixedSize(1800, 700)
-        self.canvas1.setParent(self)  # Set the parent of canvas1 as the current widget (self)
-        self.canvas1.setGeometry(50, 0, 1800, 700)
+        self.setGeometry(0,0,1880,1080)
+        widget2 = QWidget(self)
+        layout = QGridLayout(widget2)
+        widget2.setStyleSheet('''background-color:#9867C5;''')
+        #self.setCentralWidget(widget2)
+        widget2.setGeometry(80, 60, 1730, 600)
+        self.altitude_graph = altitude_graph(self)
+        self.Pressure_graph = Pressure_graph(self)
+        self.voltageGraph = voltageGraph(self)
+        self.AccelGraph = AccelGraph(self)
+        self.GyroGraph = GyroGraph(self)
+        self.VelocityGraph = VelocityGraph(self)
         
+        self.altitude_graph.setParent(self.centralWidget())
+        self.Pressure_graph.setParent(self.centralWidget())  
+        self.voltageGraph.setParent(self.centralWidget()) 
+        self.AccelGraph.setParent(self.centralWidget()) 
+        self.GyroGraph.setParent(self.centralWidget())
+        self.VelocityGraph.setParent(self.centralWidget())
+        
+         # Add both graphs to the layout in different grid positions
+        layout.addWidget(self.altitude_graph, 0, 0)  # Altitude graph at row 0, column 0
+        layout.addWidget(self.Pressure_graph, 0, 1)  # Pressure graph at row 1, column 0
+        layout.addWidget(self.VelocityGraph,0,2)
+        layout.addWidget(self.voltageGraph, 1,0)
+        layout.addWidget(self.AccelGraph, 1,1)
+        layout.addWidget(self.GyroGraph,1,2)
+            
+        self.show()
 
-        self.plot_telemetry_graphs1()
+class altitude_graph(QMainWindow):
+    def __init__(self,parent = None):
+        super().__init__()
+        self.df = pd.read_csv(file_link)
+        
+        widget = QWidget(self)
+        self.setCentralWidget(widget)
+        layout = QGridLayout(widget)
+        
+        
+        self.row = 0
+        self.time_index = 0
+        self.rows = []
+        self.plotwidget = pg.PlotWidget()
+        self.plotwidget.setBackground('w')
+        self.plotwidget.setLabel('left','Altitude',**{'font-size':'16pt','font-family':'Arial'})
+        self.plotwidget.setLabel('bottom','Time (s)',**{'font-size':'16pt','font-family':'Arial','bold': True})
+        self.pen = pg.mkPen(color=(0,0,255),style = Qt.SolidLine, width = 2)
+        
+        self.plotwidget.getAxis('left').setStyle(tickFont = pg.Qt.QtGui.QFont('Arial',14,pg.Qt.QtGui.QFont.Bold))
+        self.plotwidget.getAxis('bottom').setStyle(tickFont= pg.Qt.QtGui.QFont('Arial',14,pg.Qt.QtGui.QFont.Bold))
+        self.timer = QTimer()
+        self.timer.start(1000)
+        self.timer.timeout.connect(self.display_graph)
+        self.setCentralWidget(self.plotwidget)
+        
+        
+    def display_graph(self):
+        if self.row < len(self.df):
+         row_data = self.df.iloc[self.row]['ALTITUDE']
+         self.rows.append(row_data)
+         y_data = self.rows
+         x_data = range(self.time_index + 1)
+         self.row += 1
+         self.time_index += 1
+         self.plotwidget.plot(x_data,y_data,symbol = 'o',pen = self.pen,symbolSize = 10, symbolBrush = 'black') 
+        else:
+            self.timer.stop()
 
-    def plot_telemetry_graphs1(self):
-        ax1 = self.fig1.add_subplot(231)
-        ax2 = self.fig1.add_subplot(232)
-        ax3 = self.fig1.add_subplot(233)
-        ax4 = self.fig1.add_subplot(234)
-        ax5 = self.fig1.add_subplot(235)
-        ax6 = self.fig1.add_subplot(236)
-
-        t = range(100)
-        altitude = [i + (i % 5) * 2 for i in t]
-        pressure = [1000 - i for i in t]
-        voltage = [5 - (i % 3) for i in t]
-        gyro = [i / 2 for i in t]
-        accel = [i / 3 for i in t]
-        velocity = [i / 1.5 for i in t]
-
-        # Plot the data
-        ax1.plot(t, altitude, label='Altitude')
-        ax2.plot(t, pressure, label='Pressure')
-        ax3.plot(t, voltage, label='Voltage')
-        ax4.plot(t, gyro, label='Gyro')
-        ax5.plot(t, accel, label='Accel')
-        ax6.plot(t, velocity, label='Velocity')
-
-        # Set bold titles with larger font size
-        title_font = {'fontsize': 14, 'fontweight': 'bold'}  # Font size and bold
-        ax1.set_title('Altitude vs Time', fontdict=title_font)
-        ax2.set_title('Pressure vs Time', fontdict=title_font)
-        ax3.set_title('Voltage vs Time', fontdict=title_font)
-        ax4.set_title('Gyro vs Time', fontdict=title_font)
-        ax5.set_title('Accel vs Time', fontdict=title_font)
-        ax6.set_title('Velocity vs Time', fontdict=title_font)
-
-        # Set larger font size for axis tick labels
-        for ax in [ax1, ax2, ax3, ax4, ax5, ax6]:
-            ax.tick_params(axis='both', which='major', labelsize=12)  # Increase the tick label font size
-            ax.legend(fontsize=10)
-            ax.grid(True)  # Legend font size
-
-        # Adjust the layout of subplots
-        self.fig1.subplots_adjust(left=0.1, right=0.9, top=0.93, bottom=0.12, hspace=0.25, wspace=0.4)
-        self.canvas1.draw()
+class Pressure_graph(QMainWindow):
+    def __init__(self,parent = None):
+        super().__init__()
+        
+        widget = QWidget(self)
+        widget.setGeometry(40,40,200,400)
+        layout = QGridLayout(widget)
+        self.setCentralWidget(widget)
+        self.df = pd.read_csv(file_link, usecols =['PRESSURE'])
+        self.row_index = 0
+        self.time_index = 0
+        self.pressure_values = []
+        self.plot_widget = pg.PlotWidget()
+        self.plot_widget.setBackground('w')
+        
+        self.plot_widget.setLabel('left','Pressure',**{'font-size':'16pt','font-family':'Arial'})
+        self.plot_widget.setLabel('bottom','Time (s)',**{'font-size':'16pt','font-family':'Arial'})
+        self.plot_widget.getAxis('left').setStyle(tickFont = pg.Qt.QtGui.QFont('Arial',16,pg.Qt.QtGui.QFont.Bold))
+        self.plot_widget.getAxis('bottom').setStyle(tickFont = pg.Qt.QtGui.QFont('Arial',16,pg.Qt.QtGui.QFont.Bold))
+        self.pen1 = pg.mkPen(color=(0,0,255),style = Qt.SolidLine, width = 2)
+        layout.addWidget(self.plot_widget)
 
         
+        self.timer = QTimer()
+        self.timer.start(1000)
+        self.timer.timeout.connect(self.update_graph)
+        
+        
+    def update_graph(self):
+        if len(self.df) <= self.row_index:
+            self.timer.stop()
+            return
+        item = self.df.iloc[self.row_index]['PRESSURE']
+        x_data = range(self.time_index+1)
+        self.pressure_values.append(item)
+        self.plot_widget.plot(x_data,self.pressure_values,symbol = 'o',symbolSize= 10, symbolBrush = 'black',pen = self.pen1)
+        self.row_index += 1
+        self.time_index += 1
+        
+class VelocityGraph(QMainWindow):
+    def __init__(self, parent = None):
+        super().__init__()
+        self.df = pd.read_csv(file_link)
+        
+        self.plotwidget = pg.PlotWidget()  
+        self.plotwidget.setBackground('w')
+        self.plotwidget.setLabel('left','Velocity (m/s)',**{'font-size':'16pt','font-family':'Arial'})
+        self.plotwidget.setLabel('bottom','Time (s)',**{'font-size':'16pt','font-family':'Arial'})
+        self.plotwidget.getAxis('left').setStyle(tickFont = pg.Qt.QtGui.QFont('Arial',16,pg.Qt.QtGui.QFont.Bold))
+        self.plotwidget.getAxis('bottom').setStyle(tickFont = pg.Qt.QtGui.QFont('Arial',16,pg.Qt.QtGui.QFont.Bold))
+        self.pen2 = pg.mkPen(color = (0,0,255),style = Qt.SolidLine, width = 2)
+        
+        widget = QWidget(self)
+        self.setCentralWidget(widget)
+        layout = QVBoxLayout(widget)
+        layout.addWidget(self.plotwidget)
+        self.plotwidget.setBackground('w')
+        
+        self.row_index = 0
+        self.start_time = 0
+        self.velocity = []
+        self.time = []
+        
+        self.timer = QTimer()
+        self.timer.start(1000)
+        self.timer.timeout.connect(self.updateGraph)
+        
+    def updateGraph(self):
+        if self.row_index >= len(self.df)-1:
+            self.timer.stop()
+            return       
+        point1 = self.df.iloc[self.row_index][['GNSS_LATITUDE','GNSS_LONGITUDE','GNSS_ALTITUDE']].values
+        point2 = self.df.iloc[self.row_index+1][['GNSS_LATITUDE','GNSS_LONGITUDE','GNSS_ALTITUDE']].values
+        time1 = self.df.iloc[self.row_index]['GNSS_TIME']
+        time2 = self.df.iloc[self.row_index+1]['GNSS_TIME']
+        
+        time_difference = self.calculate_total_time(time1,time2)
+        total_distance = self.calculate_total_distance(point1,point2)
+        velocity = total_distance/time_difference if time_difference != 0 else 0
+        self.velocity.append(velocity)
+        self.time.append(self.start_time)
+        self.plotwidget.plot(self.time,self.velocity,symbol = 'o', symbolSize = 10, symbolBrush = 'black', pen = self.pen2)
+        self.row_index += 1
+        self.start_time += time_difference
+        
+    def calculate_total_time(self,time1,time2):
+        t1 = datetime.strptime(time1,"%H:%M:%S")
+        t2 = datetime.strptime(time2,"%H:%M:%S")
+        time_difference = (t2 - t1).total_seconds()
+        return time_difference
+        
+    def calculate_total_distance(self, point1,point2):
+        lat1, lon1, alt1 = point1
+        lat2, lon2, alt2 = point2
+        
+        vertical_dis = abs(alt2 - alt1)
+        horizontal_dis = distance((lat1,lon1),(lat2,lon2)).meters
+        
+        total_distance = np.sqrt(vertical_dis**2 + horizontal_dis**2)
+        return total_distance
+       
+class voltageGraph(QMainWindow):
+    def __init__(self,parent = None):
+        super().__init__()
+        self.df = pd.read_csv(file_link)
+        self.row_index = 0
+        self.time_index = 0
+        
+        self.plot_widget = pg.PlotWidget()
+        self.plot_widget.setBackground('w')
+        
+        self.plot_widget.setLabel('left','Voltage',**{'font-size':'16pt','font-family':'Arial','family-weight':'bold'})
+        self.plot_widget.setLabel('bottom','Time (s)',**{'font-size':'16pt','font-family':'Arial','family-weight':'bold'})
+        
+        self.plot_widget.getAxis('left').setStyle(tickFont = pg.Qt.QtGui.QFont('Arial',16,pg.Qt.QtGui.QFont.Bold))
+        self.plot_widget.getAxis('bottom').setStyle(tickFont = pg.Qt.QtGui.QFont('Arial',16, pg.Qt.QtGui.QFont.Bold))
+        self.pen3 = pg.mkPen(color = (0,0,255),style = Qt.SolidLine,width = 2)
+        
+        widget = QWidget(self)
+        self.setCentralWidget(widget)
+        layout = QVBoxLayout(widget)
+        layout.addWidget(self.plot_widget)
+        
+        self.voltage = []
+        
+        self.timer = QTimer()
+        self.timer.start(1000)
+        self.timer.timeout.connect(self.updateGraph)
+        
+    def updateGraph(self):
+        if self.row_index >= len(self.df):
+            self.timer.stop()
+            return 
+        item = self.df.iloc[self.row_index]['VOLTAGE']
+        self.voltage.append(item)
+        x_data = range(self.time_index+1)
+        self.plot_widget.plot(x_data,self.voltage,symbol = 'o', symbolSize = 10, symbolBrush = 'black',pen = self.pen3)
+        self.row_index += 1
+        self.time_index += 1
+
+class AccelGraph(QMainWindow):
+    def __init__(self,parent = None):
+        super().__init__()
+        self.df = pd.read_csv(file_link)
+        
+        self.plt_widget = pg.PlotWidget()
+        self.plt_widget.setBackground('w')
+        self.plt_widget.setLabel('left','Accel_R',**{'font-size': '16pt','font-family': 'Arial','family-weight':'bold'})
+        self.plt_widget.setLabel('bottom','Time (s)',**{'font-size':'16pt','font-family':'Arial','family-weight':'bold'})
+        self.plt_widget.getAxis('left').setStyle(tickFont = pg.Qt.QtGui.QFont('Arial',16, pg.Qt.QtGui.QFont.Bold))
+        self.plt_widget.getAxis('bottom').setStyle(tickFont = pg.Qt.QtGui.QFont('Arial',16, pg.Qt.QtGui.QFont.Bold))
+        
+        self.pen4 = pg.mkPen(color = (0,0,255),width = 2,style = Qt.SolidLine)
+        
+        widget = QWidget(self)
+        self.setCentralWidget(widget)
+        layout = QVBoxLayout(widget)
+        layout.addWidget(self.plt_widget)
+        
+        self.row_index = 0
+        self.time_index = 0
+        
+        self.accel = []
+        self.time = []
+        
+        self.timer = QTimer()
+        self.timer.start(1000)
+        self.timer.timeout.connect(self.updateGraph)
+        
+    def updateGraph(self):
+        if self.row_index >= len(self.df):
+            self.timer.stop()
+            return 
+        item = self.df.iloc[self.row_index]['ACC_R']
+        self.accel.append(item)
+        self.time.append(self.time_index)
+        self.plt_widget.plot(self.time,self.accel,symbol = 'o',symbolSize = 10,symbolBrush = 'black',pen = self.pen4)
+        self.row_index += 1
+        self.time_index += 1
+        
+class GyroGraph(QMainWindow):
+    def __init__(self,parent = None):
+        super().__init__()
+        self.df = pd.read_csv(file_link)
+        
+        self.plt_widget = pg.PlotWidget()
+        self.plt_widget.setBackground('w')
+        self.plt_widget.setLabel('left','GYRO_R',**{'font-size': '16pt','font-family': 'Arial','bold': True})
+        self.plt_widget.setLabel('bottom','Time (s)',**{'font-size':'16pt','font-family':'Arial','bold': True})
+        self.plt_widget.getAxis('left').setStyle(tickFont = pg.Qt.QtGui.QFont('Arial',16, pg.Qt.QtGui.QFont.Bold))
+        self.plt_widget.getAxis('bottom').setStyle(tickFont = pg.Qt.QtGui.QFont('Arial',16, pg.Qt.QtGui.QFont.Bold))
+        
+        self.pen5 = pg.mkPen(color = (0,0,255),width = 2,style = Qt.SolidLine)
+        
+        widget = QWidget(self)
+        self.setCentralWidget(widget)
+        layout = QVBoxLayout(widget)
+        layout.addWidget(self.plt_widget)
+        
+        self.row_index = 0
+        self.time_index = 0
+        
+        self.gyro = []
+        self.time = []
+        
+        self.timer = QTimer()
+        self.timer.start(1000)
+        self.timer.timeout.connect(self.updateGraph)
+        
+    def updateGraph(self):
+        if self.row_index >= len(self.df):
+            self.timer.stop()
+            return 
+        item = self.df.iloc[self.row_index]['GYRO_R']
+        self.gyro.append(item)
+        self.time.append(self.time_index)
+        self.plt_widget.plot(self.time,self.gyro,symbol = 'o',symbolSize = 10,symbolBrush = 'black',pen = self.pen5)
+        self.row_index += 1
+        self.time_index += 1
