@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QScrollArea, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGridLayout, QLineEdit
+from PyQt5.QtWidgets import QMainWindow, QScrollArea, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGridLayout, QLineEdit
 from PyQt5.QtCore import Qt, QTimer
 import pandas as pd
 

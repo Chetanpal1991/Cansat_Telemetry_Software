@@ -2,7 +2,6 @@ import sys
 import pyqtgraph as pg
 from PyQt5.QtWidgets import QMainWindow, QLabel, QGridLayout, QVBoxLayout, QWidget
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QPixmap, QPalette, QBrush
 import pandas as pd
 import numpy as np
 from datetime import datetime
