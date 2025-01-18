@@ -2,12 +2,14 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QTabWidget, QHB
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
 import pandas as pd
-from telemetry import Tab1
-from graph import Tab2
+from telemetry import Tab1,Altitude
+from matplot_try import Tab2
 from map import Tab3
 from extra import Tab4
 
 file_link = "Cansat_Telemetry_Software\\Add Ons\\trial_data.csv"
+
+boot = False
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -23,6 +25,8 @@ class MainWindow(QMainWindow):
                 );
             }
         """)
+
+        self.boot_state = False
 
         widget1 = QWidget(self)
         widget2 = QWidget(self)
@@ -40,7 +44,7 @@ class MainWindow(QMainWindow):
         header_1.setAlignment(Qt.AlignCenter)
 
         self. header_1_input = QLabel("LAUNCH_PAD", widget1)
-        self. header_1_input.setStyleSheet("font-size: 35px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
+        self. header_1_input.setStyleSheet("font-size: 25px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
         self. header_1_input.setGeometry(190, 80, 240, 50)
         self. header_1_input.setAlignment(Qt.AlignCenter)
 
@@ -64,7 +68,7 @@ class MainWindow(QMainWindow):
         header_3_wid_1.setAlignment(Qt.AlignCenter)
 
         self.header_3_wid_1_input = QLabel("0", widget1)
-        self.header_3_wid_1_input.setStyleSheet("font-size: 35px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
+        self.header_3_wid_1_input.setStyleSheet("font-size: 25px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
         self.header_3_wid_1_input.setGeometry(1335, 80, 200, 50)
         self.header_3_wid_1_input.setAlignment(Qt.AlignCenter)
 
@@ -74,7 +78,7 @@ class MainWindow(QMainWindow):
         header_3_wid_2.setAlignment(Qt.AlignCenter)
 
         self.header_3_wid_2_input = QLabel("0", widget1)
-        self.header_3_wid_2_input.setStyleSheet("font-size: 35px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
+        self.header_3_wid_2_input.setStyleSheet("font-size: 25px; color: Black; background-color: white; border: 4px solid brown;border-radius:25%;")
         self.header_3_wid_2_input.setGeometry(1275 + 340, 80, 200, 50)
         self.header_3_wid_2_input.setAlignment(Qt.AlignCenter)
 
@@ -111,13 +115,14 @@ class MainWindow(QMainWindow):
     }
     QTabBar::tab:hover {
         background: #89a4ab;
-        border-radius: 20px;  /* Ensure hover state also maintains the pill shape */
+        border-radius: 20px;  /* Ensurev hover state also maintains the pill shape */
     }
 """)
 
         widget3.setGeometry(10, 900, 1900, 100)
 
         layout3 = QHBoxLayout(widget3)
+
 
         footer_button_style = """
            QPushButton {
@@ -142,9 +147,15 @@ class MainWindow(QMainWindow):
                 background-color:#15144a;
             }
         """
-
         def boot_function():
-            print("BOOT button pressed")
+            if boot == True:
+                Altitude.__init__.time()
+                boot = False
+            else:
+                self.timer.stop()
+                boot = True
+
+
 
         def set_time_function():
             print("Set Time button pressed")

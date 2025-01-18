@@ -7,52 +7,54 @@ class Tab4(QWidget):
     def __init__(self):
         super().__init__()
 
-        main_layout = QVBoxLayout(self)  # Main layout as vertical to stack header and feed
+        print("Hello world")
 
-        # Live feed header
-        live_feed_header = QLabel("LIVE TELECAST", self)
-        live_feed_header.setStyleSheet("font-size: 50px; color: #cbe6ca; background-color: None; font-weight:Bold;")
-        live_feed_header.setAlignment(Qt.AlignCenter)
+    #     main_layout = QVBoxLayout(self)  # Main layout as vertical to stack header and feed
 
-        # Widget for live feed
-        image_widget = QWidget(self)
-        image_widget.setStyleSheet("""
-            QWidget {
-                background-color: None;
-                padding: 20px;
-            }
-        """)
+    #     # Live feed header
+    #     live_feed_header = QLabel("LIVE TELECAST", self)
+    #     live_feed_header.setStyleSheet("font-size: 50px; color: #cbe6ca; background-color: None; font-weight:Bold;")
+    #     live_feed_header.setAlignment(Qt.AlignCenter)
 
-        image_layout = QHBoxLayout(image_widget)
-        #image_layout.setContentsMargins(450, 60, 400, 400)
+    #     # Widget for live feed
+    #     image_widget = QWidget(self)
+    #     image_widget.setStyleSheet("""
+    #         QWidget {
+    #             background-color: None;
+    #             padding: 20px;
+    #         }
+    #     """)
 
-        self.live_feed_label = QLabel(image_widget)
-        self.live_feed_label.setFixedSize(1000, 562)  # Dimensions of the image
-        #self.live_feed_label.setStyleSheet("background-color: black;")  # Placeholder background
-        image_layout.addWidget(self.live_feed_label)
+    #     image_layout = QHBoxLayout(image_widget)
+    #     #image_layout.setContentsMargins(450, 60, 400, 400)
 
-        # Add widgets to the main layout
-        main_layout.addWidget(live_feed_header)
-        main_layout.addWidget(image_widget)
+    #     self.live_feed_label = QLabel(image_widget)
+    #     self.live_feed_label.setFixedSize(1000, 562)  # Dimensions of the image
+    #     #self.live_feed_label.setStyleSheet("background-color: black;")  # Placeholder background
+    #     image_layout.addWidget(self.live_feed_label)
 
-        # Start live feed
-        self.stream_url = "http://192.168.1.6:8080/video"  # Replace with your phone camera stream URL
-        self.capture = cv2.VideoCapture(self.stream_url)
+    #     # Add widgets to the main layout
+    #     main_layout.addWidget(live_feed_header)
+    #     main_layout.addWidget(image_widget)
 
-        # Timer for updating live feed
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_frame)
-        self.timer.start(30)  # Update every 30ms
+    #     # Start live feed
+    #     self.stream_url = "http://192.168.0.186:8080/video"  # Replace with your phone camera stream URL
+    #     self.capture = cv2.VideoCapture(self.stream_url)
 
-    def update_frame(self):
-        ret, frame = self.capture.read()
-        if ret:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
-            height, width, channels = frame.shape
-            qimg = QImage(frame.data, width, height, channels * width, QImage.Format_RGB888)
-            pixmap = QPixmap.fromImage(qimg).scaled(
-                self.live_feed_label.width(), self.live_feed_label.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation
-            )
-            self.live_feed_label.setPixmap(pixmap)
+    #     # Timer for updating live feed
+    #     self.timer = QTimer(self)
+    #     self.timer.timeout.connect(self.update_frame)
+    #     self.timer.start(30)  # Update every 30ms
+
+    # def update_frame(self):
+    #     ret, frame = self.capture.read()
+    #     if ret:
+    #         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
+    #         height, width, channels = frame.shape
+    #         qimg = QImage(frame.data, width, height, channels * width, QImage.Format_RGB888)
+    #         pixmap = QPixmap.fromImage(qimg).scaled(
+    #             self.live_feed_label.width(), self.live_feed_label.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation
+    #         )
+    #         self.live_feed_label.setPixmap(pixmap)
 
 

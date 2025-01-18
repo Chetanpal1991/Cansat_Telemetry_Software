@@ -104,7 +104,7 @@ class Tab1(QWidget):
 
                 input_field = QLineEdit("0", m)
                 input_field.setStyleSheet("""
-                    font-size: 35px; 
+                    font-size: 25px; 
                     color: black; 
                     background-color: white; 
                     border: 2px solid brown; 
@@ -149,7 +149,7 @@ class Altitude(QMainWindow):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.displayRow)
-        self.timer.start(1000)  
+        self.timer.start(1000) 
 
     def displayRow(self):
         
@@ -183,4 +183,4 @@ class Altitude(QMainWindow):
 
         self.label.setText("\n".join(self.rows))
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label.setStyleSheet("font-size: 35px; font-weight: bold;")
+        self.label.setStyleSheet("font-size: 25px; font-weight: bold;")

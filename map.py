@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 import pandas as pd
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QApplication, QMainWindow
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -34,22 +35,25 @@ class DataPlotter3D(QWidget):
             self.timer.stop()
             return
 
-        # Get all points up to the current index
-        lons = self.data['GNSS_LONGITUDE'][:self.index + 1]
-        lats = self.data['GNSS_LATITUDE'][:self.index + 1]
-        alts = self.data['GNSS_ALTITUDE'][:self.index + 1]
+        gyro_r = self.data['GYRO_R'][:self.index + 1].to_numpy()
+        gyro_p = self.data['GYRO_P'][:self.index + 1].to_numpy()
+        gyro_y = self.data['GYRO_Y'][:self.index + 1].to_numpy()
+
+        # Convert 1D arrays to 2D grids for surface plotting
+        LON, LAT = np.meshgrid(gyro_r, gyro_p)
+        ALT = np.tile(gyro_y, (len(gyro_p), 1))
 
         # Clear the previous plot
         self.ax.clear()
 
-        # Plot all the points up to the current index as a line plot
-        self.ax.plot(lons, lats, alts, color='b', marker='o')  # Line plot with markers
+        # Plot the surface
+        self.ax.plot_surface(LON, LAT, ALT, cmap='viridis', edgecolor='none')
 
         # Set bold title and labels
-        self.ax.set_title('3D Line Plot', fontsize=24, fontweight='bold')
-        self.ax.set_xlabel('GNSS Latitude', fontsize=16)
-        self.ax.set_ylabel('GNSS Longitude', fontsize=16)
-        self.ax.set_zlabel('GNSS Altitude', fontsize=16)
+        self.ax.set_title('3D Surface Plot', fontsize=24, fontweight='bold')
+        self.ax.set_xlabel('GYRO_R', fontsize=16)
+        self.ax.set_ylabel('GYRO_P', fontsize=16)
+        self.ax.set_zlabel('GYRO_Y', fontsize=16)
 
         # Refresh the canvas
         self.canvas.draw()
