@@ -1,7 +1,7 @@
-import sys
+import sys , csv
 import numpy as np
 import pandas as pd
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QApplication, QMainWindow
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QApplication, QMainWindow, QVBoxLayout
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl, QTimer
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -61,6 +61,43 @@ class DataPlotter3D(QWidget):
         # Move to the next data point
         self.index += 1
 
+class MapApp(QWidget):
+    def __init__(self, csv_file):
+        super().__init__()
+        self.setWindowTitle("Google Maps in PyQt5")
+        self.resize(800, 600)
+
+        # Layout
+        layout = QVBoxLayout(self)
+        self.browser = QWebEngineView()
+        layout.addWidget(self.browser)
+
+        # Load the HTML file
+        self.browser.setHtml(open("map.html").read())
+
+        # Load coordinates from CSV
+        self.coordinates = self.load_coordinates(csv_file)
+        self.current_index = 0
+
+        # Timer for 1 Hz updates
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_map)
+        self.timer.start(1000)  # 1 Hz
+
+    def load_coordinates(self, csv_file):
+        with open(csv_file, 'r') as file:
+            reader = csv.DictReader(file)
+            return [{"latitude": float(row["latitude"]), "longitude": float(row["longitude"])} for row in reader]
+
+    def update_map(self):
+        if self.current_index < len(self.coordinates):
+            coord = self.coordinates[self.current_index]
+            lat, lng = coord["latitude"], coord["longitude"]
+            self.browser.page().runJavaScript(f"updateMarker({lat}, {lng});")
+            self.current_index += 1
+        else:
+            self.timer.stop()  # Stop updating when data ends
+
 class Tab3(QWidget):
     def __init__(self):
         super().__init__()
@@ -85,6 +122,10 @@ class Tab3(QWidget):
         self.plotter = DataPlotter3D(r'Cansat_Telemetry_Software\Add Ons\trial_data.csv')  # Replace with your CSV file path
         self.plotter.setFixedSize(750, 650)  # Ensure the plotter has the same size as the map
         main_layout.addWidget(self.plotter.canvas)  # Add only the canvas to the layout
+
+    def process_data():
+        # Logic to handle telemetry data processing
+        print("Tab1: Processing telemetry data...")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -38,8 +38,12 @@ class Tab2(QWidget):
         layout.addWidget(self.accel_graph, 0, 3)
         layout.addWidget(self.gyro_graph, 1, 3)
 
+    def process_data():
+        # Logic to handle telemetry data processing
+        print("Tab1: Processing telemetry data...")
 
-class Graphs(QWidget ):
+
+class Graphs(QWidget):
     def __init__(self, col_name, col_value , dim):
         super().__init__()
         self.df = pd.read_csv(file_link)
@@ -71,10 +75,12 @@ class Graphs(QWidget ):
             row_data = self.df.iloc[self.row][col_value]
             self.rows.append(row_data)
 
-            y_data = self.rows
-            x_data = range(len(self.rows))
+            y_data = self.rows[-5:]
+            x_data = range(len(self.rows))[-5:]
 
             self.ax.plot(x_data, y_data, marker="o", color="blue")
+            if len(self.rows) > 5:
+                self.ax.set_xlim(len(self.rows) - 5, len(self.rows))
             self.canvas.draw()
 
             self.row += 1
@@ -107,6 +113,7 @@ class MultiGraphs(QWidget):
         self.time_index = 0
         self.rows1, self.rows2, self.rows3 = [], [], []
 
+
         self.timer = QTimer()
         self.timer.timeout.connect(lambda: self.display_graph(col_values))
         self.timer.start(1000)
@@ -118,14 +125,23 @@ class MultiGraphs(QWidget):
             self.rows2.append(self.df.iloc[self.row][col_values[1]])
             self.rows3.append(self.df.iloc[self.row][col_values[2]])
 
-            x_data = range(len(self.rows1))
+            x_data = list(range(len(self.rows1)))
+            x_last = x_data[-5:]
+
+            rows1_last = self.rows1[-5:]
+            rows2_last = self.rows2[-5:]
+            rows3_last = self.rows3[-5:]
 
             self.ax.plot(x_data, self.rows1, marker="o", color="red", label=col_values[0])
             self.ax.plot(x_data, self.rows2, marker="s", color="green", label=col_values[1])
             self.ax.plot(x_data, self.rows3, marker="^", color="blue", label=col_values[2])
-            self.canvas.draw()
-            if self.row <1:
+            if x_last:
+                self.ax.set_xlim(x_last[0], x_last[-1])
+
+            if self.row < 1:
                 self.ax.legend()
+            
+            self.canvas.draw()
 
             self.row += 1
         else:
@@ -178,8 +194,16 @@ class VelocityGraph(QWidget ):
         self.velocity.append(velocity)
         self.time.append(self.start_time)
 
+        times_last = self.time[-5:]
+        velocity_last = self.velocity[-5:]
+
         self.ax.plot(self.time, self.velocity, marker="o", color="blue")
+        
+        if times_last:
+            self.ax.set_xlim(times_last[0], times_last[-1])
+        
         self.canvas.draw()
+
 
         self.row_index += 1
         self.start_time += time_difference

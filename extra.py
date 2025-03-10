@@ -6,10 +6,12 @@ import cv2
 class Tab4(QWidget):
     def __init__(self):
         super().__init__()
+        main_layout = QVBoxLayout(self)  # Main layout as vertical to stack header and feed
 
-        print("Hello world")
-
-    #     main_layout = QVBoxLayout(self)  # Main layout as vertical to stack header and feed
+        text = QLabel("code under process",self)
+        text.setStyleSheet("font-size: 45px;")
+        text.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(text)
 
     #     # Live feed header
     #     live_feed_header = QLabel("LIVE TELECAST", self)
@@ -30,7 +32,6 @@ class Tab4(QWidget):
 
     #     self.live_feed_label = QLabel(image_widget)
     #     self.live_feed_label.setFixedSize(1000, 562)  # Dimensions of the image
-    #     #self.live_feed_label.setStyleSheet("background-color: black;")  # Placeholder background
     #     image_layout.addWidget(self.live_feed_label)
 
     #     # Add widgets to the main layout
@@ -38,7 +39,7 @@ class Tab4(QWidget):
     #     main_layout.addWidget(image_widget)
 
     #     # Start live feed
-    #     self.stream_url = "http://192.168.0.186:8080/video"  # Replace with your phone camera stream URL
+    #     self.stream_url = "http://192.168.0.159:8080/video"  # Replace with your phone camera stream URL
     #     self.capture = cv2.VideoCapture(self.stream_url)
 
     #     # Timer for updating live feed

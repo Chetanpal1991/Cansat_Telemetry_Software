@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QMainWindow, QScrollArea, QWidget, QHBoxLayout, QVBo
 from PyQt5.QtCore import Qt, QTimer
 import pandas as pd
 
+
+
 file_link = "Cansat_Telemetry_Software\\Add Ons\\trial_data.csv"
 
 environment_columns = ["ALTITUDE", "PRESSURE", "TEMP", "TVOC", "eCO2"]
@@ -16,10 +18,8 @@ class Tab1(QWidget):
         super().__init__()
         layout = QHBoxLayout()
         self.setLayout(layout)
-        #self.widget = QWidget()
-        #self.widget.setLayout(layout)
 
-        telemetry_data1 = QWidget()  # my name is Ankur pal
+        telemetry_data1 = QWidget()  
         telemetry_data2 = QWidget()
         telemetry_data1.setStyleSheet(" border-radius:25%;")
         telemetry_data2.setStyleSheet(" border-radius:25%;")
@@ -118,11 +118,13 @@ class Tab1(QWidget):
 
             m.setStyleSheet("border: 4px solid #084705; border-radius:25%;")
             
-        #self.Altitude = Altitude(self)
-        #self.Altitude.setParent(self.centralWidget())  
+
         self.altitude_window = Altitude(input_fields=self.input_fields)
-        #self.altitude_window.show() 
         self.show()
+
+    def process_data():
+        # Logic to handle telemetry data processing
+        print("Tab1: Processing telemetry data...")
 
 class Altitude(QMainWindow):
     def __init__(self, parent=None, input_fields=None):
@@ -146,34 +148,38 @@ class Altitude(QMainWindow):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setWidget(self.label)
         self.layout.addWidget(self.scrollArea)
+        
 
         self.timer = QTimer()
-        self.timer.timeout.connect(self.displayRow)
+        self.timer.timeout.connect(lambda: self.displayRow())
         self.timer.start(1000) 
 
     def displayRow(self):
         
+        
         if self.row < len(self.data):
-            # Read data from CSV and update corresponding fields
+
+
+
             row_data = self.data.iloc[self.row]
-            for idx, column_name in enumerate(self.input_fields[0]):  # Update environment data fields
-                column_value = str(row_data[environment_columns[idx]])  # Get the respective column data
-                column_name.setText(column_value)  # Update the respective field with data
+            for idx, column_name in enumerate(self.input_fields[0]):
+                column_value = str(row_data[environment_columns[idx]])  
+                column_name.setText(column_value)  
 
-            for idx, column_name in enumerate(self.input_fields[1]):  # Update voltage data fields
-                column_value = str(row_data[voltage_current_columns[idx]])  # Get the respective column data
+            for idx, column_name in enumerate(self.input_fields[1]):  
+                column_value = str(row_data[voltage_current_columns[idx]])  
                 column_name.setText(column_value)
 
-            for idx, column_name in enumerate(self.input_fields[2]):  # Update GNSS data fields
-                column_value = str(row_data[gnss_columns[idx]])  # Get the respective column data
+            for idx, column_name in enumerate(self.input_fields[2]):
+                column_value = str(row_data[gnss_columns[idx]]) 
                 column_name.setText(column_value)
 
-            for idx, column_name in enumerate(self.input_fields[3]):  # Update accelerometer data fields
-                column_value = str(row_data[Accel_columns[idx]])  # Get the respective column data
+            for idx, column_name in enumerate(self.input_fields[3]):
+                column_value = str(row_data[Accel_columns[idx]])
                 column_name.setText(column_value)
 
-            for idx, column_name in enumerate(self.input_fields[4]):  # Update gyroscope data fields
-                column_value = str(row_data[Gyro_columns[idx]])  # Get the respective column data
+            for idx, column_name in enumerate(self.input_fields[4]):
+                column_value = str(row_data[Gyro_columns[idx]])  
                 column_name.setText(column_value)
 
             # Move to the next row

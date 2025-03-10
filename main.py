@@ -2,14 +2,13 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QTabWidget, QHB
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
 import pandas as pd
-from telemetry import Tab1,Altitude
+from telemetry import Tab1
 from matplot_try import Tab2
 from map import Tab3
 from extra import Tab4
 
-file_link = "Cansat_Telemetry_Software\\Add Ons\\trial_data.csv"
 
-boot = False
+file_link = "Cansat_Telemetry_Software\\Add Ons\\trial_data.csv"
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -31,9 +30,7 @@ class MainWindow(QMainWindow):
         widget1 = QWidget(self)
         widget2 = QWidget(self)
         widget3 = QWidget(self)
-        
-        self.df = pd.read_csv(file_link)
-        self.row_index = 0
+    
 
         widget1.setGeometry(10, 10, 1900, 150)
         widget1.setStyleSheet("background-color:#15144a;")
@@ -147,13 +144,7 @@ class MainWindow(QMainWindow):
                 background-color:#15144a;
             }
         """
-        def boot_function():
-            if boot == True:
-                Altitude.__init__.time()
-                boot = False
-            else:
-                self.timer.stop()
-                boot = True
+        
 
 
 
@@ -175,7 +166,7 @@ class MainWindow(QMainWindow):
         button1 = QPushButton("BOOT")
         button1.setStyleSheet(footer_button_style)
         button1.setFixedSize(150, 50)
-        button1.clicked.connect(boot_function)
+        button1.clicked.connect(lambda: self.boot_function())
         layout3.addWidget(button1)
 
         button2 = QPushButton("Set Time")
@@ -223,21 +214,32 @@ class MainWindow(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_data)
         self.timer.start(1000)  # Update every 1 second
+
+        self.df = pd.read_csv(file_link)
+        self.row_index = 0
+
+    def boot_function(self ):
+            
+        
+        if self.boot == True:
+            self.boot = False
+            self.tel_boot = False
+            
+
+        elif self.boot == False:
+            self.boot = True
+            self.tel_boot = True      
         
     def update_data(self):
-        #Method to update labels from CSV data.
         if self.row_index < len(self.df):
-            # Get the current row's data
+
             current_row = self.df.iloc[self.row_index]
-            # Update labels with the corresponding data
             time_stamping = current_row["TIME_STAMPING"]
             packet_count = current_row["PACKET_COUNT"]
             flight_software_state = current_row["FLIGHT_SOFTWARE_STATE"]
-            # Set the label text
             self.header_3_wid_1_input.setText(str(time_stamping))
             self.header_3_wid_2_input.setText(str(packet_count))
             self.header_1_input.setText(str(flight_software_state))
-            # Increment row index to move to the next row
             self.row_index += 1
 
 if __name__ == '__main__':
