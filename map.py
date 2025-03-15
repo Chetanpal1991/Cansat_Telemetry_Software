@@ -1,4 +1,4 @@
-import sys , csv
+import sys, csv
 import numpy as np
 import pandas as pd
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QApplication, QMainWindow, QVBoxLayout
@@ -106,6 +106,7 @@ class Tab3(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         
         # Load and display the map
+        
         url = QUrl("https://www.google.com/maps")
         self.map_view = QWebEngineView(self)
         self.map_view.setUrl(url)
