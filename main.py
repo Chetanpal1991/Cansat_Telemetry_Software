@@ -4,7 +4,7 @@ from PyQt5.QtGui import QPixmap
 import pandas as pd
 from telemetry import Tab1
 from matplot_try import Tab2
-from map import Tab3
+from new_map1 import Tab3
 from extra import Tab4
 
 
