@@ -5,9 +5,10 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 from geopy.distance import distance
+import os;
 
-file_link = "Cansat_Telemetry_Software\\Add Ons\\trial_data.csv"
-
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Get script directory
+file_link = os.path.join(base_dir, "Add Ons", "trial_data.csv")
 
 class Tab2(QMainWindow):
     def __init__(self):

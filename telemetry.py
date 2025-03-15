@@ -3,9 +3,11 @@ from PyQt5.QtWidgets import QMainWindow, QScrollArea, QWidget, QHBoxLayout, QVBo
 from PyQt5.QtCore import Qt, QTimer
 import pandas as pd
 
+import os;
 
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Get script directory
+file_link = os.path.join(base_dir, "Add Ons", "trial_data.csv")
 
-file_link = "Cansat_Telemetry_Software\\Add Ons\\trial_data.csv"
 
 environment_columns = ["ALTITUDE", "PRESSURE", "TEMP", "TVOC", "eCO2"]
 voltage_current_columns = ["VOLTAGE"]

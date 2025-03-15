@@ -6,14 +6,15 @@ from telemetry import Tab1
 from matplot_try import Tab2
 from map import Tab3
 from extra import Tab4
+import os;
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Get script directory
+file_link = os.path.join(base_dir, "Add Ons", "trial_data.csv")
 
-
-file_link = "Cansat_Telemetry_Software\\Add Ons\\trial_data.csv"
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
+        
         self.setGeometry(0, 0, 1920, 1080)
         self.setWindowTitle("Manual Layout Example")
         self.setStyleSheet("""
@@ -50,14 +51,14 @@ class MainWindow(QMainWindow):
         header_2.setGeometry(640, 15, 630, 30)
         header_2.setAlignment(Qt.AlignCenter)
 
-        logo_image = QPixmap("Cansat_Telemetry_Software\Add Ons\Team Kalpana Logo 1.png").scaledToWidth(100, Qt.TransformationMode.SmoothTransformation)
+        logo_image = QPixmap("Add Ons/Team Kalpana Logo 1.png").scaledToWidth(100, Qt.TransformationMode.SmoothTransformation)
         logo_label = QLabel(widget1)
         logo_label.setPixmap(logo_image)
         logo_label.setGeometry(900, 60, 150, 100)
 
         header_3 = QWidget(widget1)
         header_3.setGeometry(1275, 20, 580, 30)
-        header_3.setStyleSheet("background-color: None;")
+        header_3.setStyleSheet("background-color: none;")
 
         header_3_wid_1 = QLabel("TIME", header_3)
         header_3_wid_1.setStyleSheet("font-size: 25px; color: #cbe6ca;font-weight:Bold;")
@@ -80,7 +81,7 @@ class MainWindow(QMainWindow):
         self.header_3_wid_2_input.setAlignment(Qt.AlignCenter)
 
         widget2.setGeometry(10, 125, 1900, 875)
-        widget2.setStyleSheet("background-color: None;")
+        widget2.setStyleSheet("background-color: none;")
 
         self.tabs = QTabWidget(self)
         self.tabs.setGeometry(10, 175, 1900, 725)
@@ -90,7 +91,7 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(Tab4(), "Live Telecast")
         self.tabs.setStyleSheet("""
     QTabWidget::pane {
-        border-top: 2px solid None;
+        border-top: 2px solid none;
         background: None;
     }
     QTabBar::tab {

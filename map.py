@@ -119,7 +119,7 @@ class Tab3(QWidget):
         main_layout.addWidget(self.map_view)
 
         # Create an instance of DataPlotter3D
-        self.plotter = DataPlotter3D(r'Cansat_Telemetry_Software\Add Ons\trial_data.csv')  # Replace with your CSV file path
+        self.plotter = DataPlotter3D(r'\Add Ons/trial_data.csv')  # Replace with your CSV file path
         self.plotter.setFixedSize(750, 650)  # Ensure the plotter has the same size as the map
         main_layout.addWidget(self.plotter.canvas)  # Add only the canvas to the layout
 
