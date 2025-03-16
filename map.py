@@ -1,4 +1,4 @@
-import sys , csv
+import sys, csv
 import numpy as np
 import pandas as pd
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QApplication, QMainWindow, QVBoxLayout
@@ -6,6 +6,63 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl, QTimer
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+import os
+from scipy.spatial.transform import Rotation as R
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Get script directory
+file_link = os.path.join(base_dir, "Add Ons", "trial_data.csv")
+# class DataPlotter3D(QWidget):
+    # def __init__(self, csv_file):
+    #     super().__init__()
+
+    #     self.csv_file = csv_file
+    #     self.data = pd.read_csv(self.csv_file)
+    #     self.index = 0  # To keep track of current data point
+        
+    #     # Create a matplotlib figure
+    #     self.fig = Figure(figsize=(24, 6))
+    #     self.canvas = FigureCanvas(self.fig)
+    #     self.canvas.setFixedSize(750, 650)  # Set size for the canvas
+    #     self.fig.set_facecolor((0.5, 0.3, 0.8, 0.5))  # Set background color for the figure
+        
+    #     self.ax = self.fig.add_subplot(111, projection='3d')
+    #     self.ax.set_facecolor("None")
+
+    #     # Set up a timer for updating the plot every 1 second (1Hz)
+    #     self.timer = QTimer(self)
+    #     self.timer.setInterval(1000)  # 1000 ms = 1 second
+    #     self.timer.timeout.connect(self.update_plot)
+    #     self.timer.start()
+ 
+    # def update_plot(self):
+    #     if self.index >= len(self.data):
+    #         self.timer.stop()
+    #         return
+
+    #     gyro_r = self.data['GYRO_R'][:self.index + 1].to_numpy()
+    #     gyro_p = self.data['GYRO_P'][:self.index + 1].to_numpy()
+    #     gyro_y = self.data['GYRO_Y'][:self.index + 1].to_numpy()
+
+    #     # Convert 1D arrays to 2D grids for surface plotting
+    #     LON, LAT = np.meshgrid(gyro_r, gyro_p)
+    #     ALT = np.tile(gyro_y, (len(gyro_p), 1))
+
+    #     # Clear the previous plot
+    #     self.ax.clear()
+
+    #     # Plot the surface
+    #     self.ax.plot_surface(LON, LAT, ALT, cmap='viridis', edgecolor='none')
+
+    #     # Set bold title and labels
+    #     self.ax.set_title('3D Surface Plot', fontsize=24, fontweight='bold')
+    #     self.ax.set_xlabel('GYRO_R', fontsize=16)
+    #     self.ax.set_ylabel('GYRO_P', fontsize=16)
+    #     self.ax.set_zlabel('GYRO_Y', fontsize=16)
+
+    #     # Refresh the canvas
+    #     self.canvas.draw()
+
+    #     # Move to the next data point
+    #     self.index += 1
 
 class DataPlotter3D(QWidget):
     def __init__(self, csv_file):
@@ -13,54 +70,70 @@ class DataPlotter3D(QWidget):
 
         self.csv_file = csv_file
         self.data = pd.read_csv(self.csv_file)
-        self.index = 0  # To keep track of current data point
-        
-        # Create a matplotlib figure
-        self.fig = Figure(figsize=(24, 6))
-        self.canvas = FigureCanvas(self.fig)
-        self.canvas.setFixedSize(750, 650)  # Set size for the canvas
-        self.fig.set_facecolor((0.5, 0.3, 0.8, 0.5))  # Set background color for the figure
-        
-        self.ax = self.fig.add_subplot(111, projection='3d')
-        self.ax.set_facecolor("None")
+        self.index = 0
 
-        # Set up a timer for updating the plot every 1 second (1Hz)
+        # Create figure
+        self.fig = Figure(figsize=(10, 10))
+        self.canvas = FigureCanvas(self.fig)
+        self.ax = self.fig.add_subplot(111, projection='3d')
+
+        # Set up timer
         self.timer = QTimer(self)
-        self.timer.setInterval(1000)  # 1000 ms = 1 second
+        self.timer.setInterval(1000)  # Update every second
         self.timer.timeout.connect(self.update_plot)
         self.timer.start()
- 
+
+    def create_cylinder(self, height=50, radius=20, num_points=50):
+        """Creates a cylinder mesh."""
+        theta = np.linspace(0, 2 * np.pi, num_points)
+        z = np.linspace(-height / 2, height / 2, num_points)
+        theta, z = np.meshgrid(theta, z)
+        x = radius * np.cos(theta)
+        y = radius * np.sin(theta)
+        return x, y, z
     def update_plot(self):
         if self.index >= len(self.data):
             self.timer.stop()
             return
 
-        gyro_r = self.data['GYRO_R'][:self.index + 1].to_numpy()
-        gyro_p = self.data['GYRO_P'][:self.index + 1].to_numpy()
-        gyro_y = self.data['GYRO_Y'][:self.index + 1].to_numpy()
+        # Get gyro values
+        roll = np.radians(self.data['GYRO_R'][self.index])
+        pitch = np.radians(self.data['GYRO_P'][self.index])
+        yaw = np.radians(self.data['GYRO_Y'][self.index])
 
-        # Convert 1D arrays to 2D grids for surface plotting
-        LON, LAT = np.meshgrid(gyro_r, gyro_p)
-        ALT = np.tile(gyro_y, (len(gyro_p), 1))
+        # Create cylinder
+        x, y, z = self.create_cylinder()
 
-        # Clear the previous plot
+        # Apply rotation to the cylinder (Rotate around its own axis)
+        r = R.from_euler('xyz', [roll, pitch, yaw], degrees=False)
+        rotated_coords = np.array([x.flatten(), y.flatten(), z.flatten()])
+        rotated_coords = r.apply(rotated_coords.T).T
+
+        x_rot, y_rot, z_rot = rotated_coords.reshape(3, *x.shape)
+
+        # Clear and plot the rotated Cansat
         self.ax.clear()
+        self.ax.plot_surface(x_rot, y_rot, z_rot, color='red', alpha=1)
+        
+        
 
-        # Plot the surface
-        self.ax.plot_surface(LON, LAT, ALT, cmap='viridis', edgecolor='none')
+        # Set labels
+        self.ax.set_title('3D Surface Rotation',fontsize=18,color="#cbe6ca")
+        self.ax.set_xlabel('X',fontsize=15,color="#cbe6ca")
+        self.ax.set_ylabel('Y',fontsize=15,color="#cbe6ca")
+        self.ax.set_zlabel('Z',fontsize=15,color="#cbe6ca")
+        self.ax.set_facecolor('#15144a') 
+        self.fig.set_facecolor('#15144a')
+        self.ax.xaxis.set_tick_params(labelcolor='white', labelsize=10) 
+        self.ax.yaxis.set_tick_params(labelcolor='white', labelsize=10) 
+        self.ax.zaxis.set_tick_params(labelcolor='white', labelsize=10)      
 
-        # Set bold title and labels
-        self.ax.set_title('3D Surface Plot', fontsize=24, fontweight='bold')
-        self.ax.set_xlabel('GYRO_R', fontsize=16)
-        self.ax.set_ylabel('GYRO_P', fontsize=16)
-        self.ax.set_zlabel('GYRO_Y', fontsize=16)
 
-        # Refresh the canvas
+        # Refresh canvas
         self.canvas.draw()
 
-        # Move to the next data point
+        # Move to next gyro reading
         self.index += 1
-
 class MapApp(QWidget):
     def __init__(self, csv_file):
         super().__init__()
@@ -106,6 +179,7 @@ class Tab3(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         
         # Load and display the map
+        
         url = QUrl("https://www.google.com/maps")
         self.map_view = QWebEngineView(self)
         self.map_view.setUrl(url)
@@ -119,7 +193,7 @@ class Tab3(QWidget):
         main_layout.addWidget(self.map_view)
 
         # Create an instance of DataPlotter3D
-        self.plotter = DataPlotter3D(r'\Add Ons/trial_data.csv')  # Replace with your CSV file path
+        self.plotter = DataPlotter3D(file_link)  # Replace with your CSV file path
         self.plotter.setFixedSize(750, 650)  # Ensure the plotter has the same size as the map
         main_layout.addWidget(self.plotter.canvas)  # Add only the canvas to the layout
 
