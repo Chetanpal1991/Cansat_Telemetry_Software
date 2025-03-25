@@ -61,10 +61,12 @@
 
 import sys
 import cv2
+import os;
 import numpy as np
-from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget 
+from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget ,QHBoxLayout
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import QTimer, Qt
+
 
 
 class Tab4(QWidget):
@@ -89,6 +91,8 @@ class Tab4(QWidget):
                               """)  
          # Video Label
         self.video_label = QLabel(self)
+        self.video_label.setFixedSize(1400, 650)
+        self.video_label.setAlignment(Qt.AlignCenter)
         # Layout
         
         layout = QVBoxLayout()
@@ -96,36 +100,59 @@ class Tab4(QWidget):
         layout.addSpacing(20)
         layout.addWidget(heading, alignment=Qt.AlignCenter)
         layout.addSpacing(20)
-        layout.addWidget(self.video_label)
+        layout.addWidget(self.video_label, alignment=Qt.AlignHCenter)
         self.setLayout(layout)
-
+        
         # OpenCV Video Capture
-        self.cap = cv2.VideoCapture("http://192.168.29.98:8080/video") # 0 is default video-http://192.168.29.156:8080/video
-        if not self.cap.isOpened():
-            print("Error: Could not open webcam.")
-            return
+        
+        self.cap = cv2.VideoCapture("http://192.168.1.35:8080/video") # 0 is default video-http://192.168.29.156:8080/video
+        # if not self.cap.isOpened():
+        #     self.video_label.setFixedSize(0, 0)
+        #     h2=QLabel("Error : Could not open webcam ",self)
+        #     h2.setStyleSheet(""" 
+        #         font-weight:800;
+        #         color:#e1dfe3;
+        #         font-size:18px;
+        #         background-color:red;
+        #         padding:10px;
+        #         padding-left: 30px; 
+        #         padding-right: 30px; 
+        #         border-radius:10px;
+        #         border: 2px solid black;
+        #         """)
+        #     layout.addWidget(h2,alignment=Qt.AlignCenter)
+        #     self.timer = QTimer(self)
+        #     self.timer.timeout.connect(self.update_frame)
+        #     self.timer.timeout.connect(self.update_cam)
+        #     self.timer.start(30) 
+        #     # return
 
         # Timer to update frames
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
-        self.timer.start(15)  # Update every 30ms
-
+        self.timer.start(30)  # Update every 30ms
+    
     def update_frame(self):
-        if not self.cap.isOpened():
-            self.video_label.setText("Stream Ended. Retrying...")
-            self.video_label.setStyleSheet("background-color: red; color: white; font-size: 20px;")
-            QTimer.singleShot(5000, self.start_stream)  # Try reconnecting after 5 sec
-            return
+        if not hasattr(self, 'cap') or not self.cap.isOpened():
+            self.video_label.setText("Waiting ....")
+            self.video_label.setStyleSheet("color:red;font-size:30px;")
+            self.cap = cv2.VideoCapture("http://192.168.1.35:8080/video")
         ret, frame = self.cap.read()
+        if not ret : 
+            self.cap.release()
+            self.cap = cv2.VideoCapture("http://192.168.1.35:8080/video")
         if ret:
             # Convert BGR to RGB for PyQt
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             h, w, ch = frame.shape
             bytes_per_line = ch * w
             q_img = QImage(frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
-
             # Display in QLabel
-            self.video_label.setPixmap(QPixmap.fromImage(q_img))
+            pixmap = QPixmap.fromImage(q_img).scaled(
+                self.video_label.width(), self.video_label.height(),
+                Qt.KeepAspectRatio, Qt.SmoothTransformation
+            )
+            self.video_label.setPixmap(pixmap)
 
     def closeEvent(self, event):
         """ Close the camera when exiting the application """
